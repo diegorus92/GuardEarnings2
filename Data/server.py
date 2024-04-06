@@ -7,13 +7,15 @@ db = client.guard_earnings2
 
 def getGuards():
     return db.guard.find()
-def getWorksByGuard(guard_name, guard_lastname):
+
+def getGuard(guard_name, guard_lastname):
     return db.guard.find_one({"$and": [{"name": guard_name}, {"last_name": guard_lastname}]})
 def getWorks(guardId):
     return db.works.find({"guard_id": guardId})
 
 def insertWork(object):
     return db.works.insert_one(object)
+
 
 def insertManyWorks(list):
     return db.works.insert_many(list)

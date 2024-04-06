@@ -2,9 +2,10 @@ from bson import ObjectId
 from Data import server
 from Data.models import Guard
 from Bussines import operations
+from Bussines import smtp
 
 #Get guard data info
-guard_data = server.getWorksByGuard("Diego", "Rus")
+guard_data = server.getGuard("Diego", "Rus")
 guard = guard_data
 
 #Get works of guard info using his ObjectId for relation and target to a particular month
@@ -12,7 +13,7 @@ dataworks = []
 try:
     data = server.getWorks(guard.get("_id"))
     listDataWorks = list(data)
-    dataworks = operations.filterWorksByMonth(listDataWorks, "03")
+    dataworks = operations.filterWorksByMonth(listDataWorks, "04")
 except AttributeError as err:
     print(f"ERROR!: ObjectId is null")
 
@@ -21,7 +22,7 @@ except AttributeError as err:
 work = {'guard_id': ObjectId('660b21c8bae8e3b85f5a99d1'),
         'date': '05-03-2024', 'place': 'Building <Antares I>',
         'address': 'Carlos Pellegrini 1286', 'checkIn': '22:00', 'checkOut': '06:00',
-        'total_hours': 8, 'payment_per_hours': 350, 'day': 'tuesday'}
+        'payment_per_hours': 350, 'day': 'tuesday'}
 works = [
     {'guard_id': ObjectId('660b21c8bae8e3b85f5a99d1'),
         'date': '09-03-2024', 'place': 'Building <Antares I>',
@@ -196,6 +197,27 @@ if __name__ == '__main__':
     print(f"Total earning = $ {operations.calculateTotalPaymentMonth(result)}")
     print(f"Total hours = {operations.countTotalHours(dataworks)} hs")
 
-    #print(operations.calculateTotalHoursWorked("20:30", "07:00"))
+    #Insert new work for a guard
+    guardId = server.getGuard("Diego", "Rus")
+    newWork = {'guard_id': guardId.get('_id'),
+        'date': '06-04-2024', 'place': 'Building <Antares I>',
+        'address': 'Carlos Pellegrini 1286', 'checkIn': '20:00', 'checkOut': '08:00',
+        'payment_per_hours': 350, 'day': 'saturday'}
+    print(newWork)
+    #print(server.insertWork(newWork))
+
+    #Sending email with worked days and total earnings plus total hours
+    message = "Hi Mr. "+guard.get('last_name')+" "+guard.get('name')+"\nYour worked days from April 2024:\n"
+
+    for item in dataworks:
+        message += str(item)
+        message += "\n"
+    result1 = operations.calculateTotalPaymentPerDay(dataworks)
+    message += "\nTotal earning = $ "+str(operations.calculateTotalPaymentMonth(result))
+    message += "\nTotal hours = "+str(operations.countTotalHours(dataworks))+" hs"
+
+    print(message)
+    #msg = smtp.createMsg(message,"Earnings from April 2024", "diegorus.1992@gmail.com", "diegorus.1992@gmail.com")
+    #smtp.sendMsg(msg)
 
 
