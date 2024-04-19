@@ -1,11 +1,14 @@
 
 def viewAllData(data):
     worked_days = 0
+    strResult = ""
 
     for item in data:
-        print(item)
+        strResult += str(item)+"\n"
         worked_days += 1
-    print(f"Worked days: {worked_days}")
+    strResult += "\n"+"Worked days: "+str(worked_days)+"\n\n"
+    return str(strResult)
+
 
 def findDataByDate(data, date = "01-03-2024"):
     for item in data:
@@ -17,14 +20,16 @@ def filterWorksByMonth(data, monthNumber):
     return data_filtered
 def calculateTotalPaymentPerDay(data):
     payments = []
+    strResult = ""
 
     for item in data:
         #total = item.get('total_hours') * item.get('payment_per_hours')
         total = calculateTotalHoursWorked(item.get('checkIn'), item.get('checkOut')) * item.get('payment_per_hours')
         payments.append(total)
-        print(f"Total payment {item.get('day')} {item.get('date')} = $ {total}")
+        #print(f"Total payment {item.get('day')} {item.get('date')} = $ {total}")
+        strResult += str(f"Total payment {item.get('day')} {item.get('date')} = $ {total} \n")
 
-    return payments
+    return (payments, strResult)
 
 def calculateTotalPaymentMonth(list_payments_per_days):
     acumulator = 0
